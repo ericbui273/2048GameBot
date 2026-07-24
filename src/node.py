@@ -1,16 +1,19 @@
-from game_board import Board
+from board import Board
 class Node():
-    def __init__(self,is_max,board:Board,value=None, children = []):
+    def __init__(self,is_max,board:Board, children = None):
         self._is_max = is_max
-        self._value = value
-        self.children = children
-        self.board = board
+        self._children = [] if not children else children
+        self._board = board
+        self._value = 0
     
-    def add_child(self,child):
-        self.children.append(child)
+    def board(self):
+        return self._board
 
-    def get_board_copy(self):
-        return (self.board.board().copy(),self.board.empty_tiles().copy())
+    def add_child(self,child):
+        self._children.append(child)
+
+    def children(self):
+        return self._children
 
     def set_value(self,value):
         self._value = value
