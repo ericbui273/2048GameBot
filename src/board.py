@@ -2,7 +2,6 @@ import random
 class Board:
     weight = [[pow(4,3),pow(4,2),pow(4,1),pow(4,4)],[pow(4,4),pow(4,5),pow(4,6),pow(4,7)],[pow(4,11),pow(4,10),pow(4,9),pow(4,8)],[pow(4,12),pow(4,13),pow(4,14),pow(4,15)]]
     def __init__(self):
-        self._score = 0
         self._board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
         self.init_board()
 
@@ -14,6 +13,10 @@ class Board:
     def board(self):
         return self._board
 
+    def set_value(self,pos,value):
+        self._board[pos[0]][pos[1]] = value
+    def get_value(self,pos):
+        return self._board[pos[0]][pos[1]]
 #function to move all tiles of a column or row to a certain direction
     def switch(self,pos: tuple, move: int, direction: str):
         x,y = pos[0], pos[1]
@@ -108,6 +111,7 @@ class Board:
                 merged = self.merged((i,j),"left")
                 if merged:
                     point += merged
+                    break
                 j += 1
         return point
         
@@ -132,7 +136,7 @@ class Board:
                     zeros = 0
                     continue
                 #check if the current tile can be merged with the tile on its right side
-                merged = self.merged((i,j),"left")
+                merged = self.merged((i,j),"right")
                 if merged:
                     point += merged
                     break
@@ -192,20 +196,27 @@ class Board:
                 i -= 1
         return point
     
-    def end_game(self):
-        return self._end_game
-    
     def set_new_tile(self,pos,value):
         row,col = pos
         self._board[row][col] = value
+
     def __str__(self):
-        return f"{self._board[0]}\n{self._board[1]}\n{self._board[2]}\n{self._board[3]}\n"
+        res = ""
+        for i in range(len(self._board)):
+            if i == len(self._board)-1:
+                res += f"{self._board[i]}"
+                continue
+            res += f"{self._board[i]}\n"
+        return res
     
     #heuristic function to evaluate the game state
     def heuristic(self):
         res = 0
         for i in range(4):
             for j in range(4):
-                res += self._board[i][j]*self._weight[i][j]
-        res *= pow(len(self._empty_tiles),2) 
+                res += self._board[i][j]*self.weight[i][j]
+        res *= pow(len(self.find_empty_tiles()),2) 
         return res
+
+board = Board()
+print(board)
