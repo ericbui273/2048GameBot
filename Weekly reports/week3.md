@@ -1,0 +1,7 @@
+# Project progress week 3
+
+This week I managed to complete a working version of the project. The game logic has been implemented and the Expectimax AI is now able to play the game and reach 2048, 4096 and 8192, although the heuristic function still requires further tuning and optimization. I also spent some time improving the overall structure of the project and installing Poetry for the automatic test.
+
+The most challenging part of this week is implementing the unit tests. I have not yet implemented the project tests because getting familiar with setting up the environment, repository for the test took more time than I'd expected. I also encountered issues with importing module from other file in the test file even though I had followed the instruction from the materials, but I was able to resolve them (with some help from ChatGPT). My next step is to start writing comprehensive unit tests for the Board, Game, and AI classes using representative game states. Even though I now have successfully set up the tests repository, creating comprehensive unit test with representative input still remains challenging to me, and I am prepared to spend the same amount I spent writing the code files on creating the tests.
+
+I spent approximately 8–10 hours on the project this week. For the next week, I will focus on finalizing unit tests, starting to look into more advanced test if needed, improving and finalizing the heuristic function, and if there is still time, create a better user interface.
