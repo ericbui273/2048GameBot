@@ -4,8 +4,8 @@ import copy
 class Game():
     def __init__(self):
         self._board = Board()
+        self._board.init_board()
         self._score = 0
-        print(self._board)
 
     def copy_board(self):
         return copy.deepcopy(self._board)
@@ -18,35 +18,34 @@ class Game():
         pos = random.choice(self._board.find_empty_tiles())
         value = random.choices([2,4],weights = [0.9,0.1])
         self._board.set_new_tile(pos,value[0])
-        print(self._board)
+        print(f"{self._board}\n")
 
     def move_right(self):
         self._score += self._board.move_right()
-        print(self._board)
         pos = random.choice(self._board.find_empty_tiles())
         value = random.choices([2,4],weights = [0.9,0.1])
         self._board.set_new_tile(pos,value[0])
-        print(self._board)
+        print(f"{self._board}\n")
 
     def move_up(self):
         self._score += self._board.move_up()
         pos = random.choice(self._board.find_empty_tiles())
         value = random.choices([2,4],weights = [0.9,0.1])
         self._board.set_new_tile(pos,value[0])
-        print(self._board)
+        print(f"{self._board}\n")
 
     def move_down(self):
         self._score += self._board.move_down()
         pos = random.choice(self._board.find_empty_tiles())
         value = random.choices([2,4],weights = [0.9,0.1])
         self._board.set_new_tile(pos,value[0])
-        print(self._board)
+        print(f"{self._board}\n")
 
     def print_board(self):
         print(self._board)
 
     def game_over(self):
-        if self._board.no_empty_tiles():
+        if self._board.in_terminal_state():
             print(f"Game over! Score: {self._score}")
             return True
         return False

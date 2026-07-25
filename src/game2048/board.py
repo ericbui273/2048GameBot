@@ -1,9 +1,8 @@
 import random
 class Board:
-    weight = [[pow(4,3),pow(4,2),pow(4,1),pow(4,4)],[pow(4,4),pow(4,5),pow(4,6),pow(4,7)],[pow(4,11),pow(4,10),pow(4,9),pow(4,8)],[pow(4,12),pow(4,13),pow(4,14),pow(4,15)]]
-    def __init__(self):
-        self._board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
-        self.init_board()
+    weight = [[pow(4,3),pow(4,2),pow(4,1),pow(4,0)],[pow(4,4),pow(4,5),pow(4,6),pow(4,7)],[pow(4,11),pow(4,10),pow(4,9),pow(4,8)],[pow(4,12),pow(4,13),pow(4,14),pow(4,15)]]
+    def __init__(self,board = None):
+        self._board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]] if board == None else board
 
     def init_board(self):
         row,col = (random.randint(0,3),random.randint(0,3))
@@ -79,8 +78,19 @@ class Board:
                     empty_tiles.append((i,j))
         return empty_tiles   
 
-    def no_empty_tiles(self):
-        return len(self.find_empty_tiles()) == 0
+    def possible_merge(self):
+        for i in range(4):
+            for j in range(4):
+                if i < 3 and self._board[i][j] == self._board[i+1][j]:
+                    return True
+                if j < 3 and self._board[i][j] == self._board[i][j+1]:
+                    return True
+        return False
+
+    def in_terminal_state(self):
+        if len(self.find_empty_tiles()) > 0:
+            return False
+        return not self.possible_merge()
 
     def create_new_tile(self, pos, value = None):
         x,y = pos[0], pos[1]
@@ -208,14 +218,63 @@ class Board:
                 continue
             res += f"{self._board[i]}\n"
         return res
-    
+
+    def monotonicity_score(self):
+        score = 0
+        for i in range(4):
+            for j in range(4):
+                if j < 3:
+                    value_diff = self._board[i][j+1]-self._board[i][j]
+                    if value_diff == 0:
+                        continue
+                    if value_diff/(self.weight[i][j]-self.weight[i][j+1]) > 0:
+                        score += 1
+                    else:
+                        score -= 1
+                if i < 3 and j in [0,3]:
+                    value_diff = self._board[i][j]-self._board[i+1][j]
+                    if value_diff == 0:
+                        continue
+                    if value_diff/(self.weight[i][j]-self.weight[i+1][j]) > 0:
+                        score += 1
+                    else:
+                        score -= 1   
+        return score
+
+    def smoothness_score(self):
+        score = 0
+        for i in range(4):
+            for j in range(4):
+                if self._board[i][j] == 0:
+                    continue
+                for k in range(1,4-j):
+                        if self._board[i][j+k] == 0:
+                            continue
+                        if self._board[i][j+k] <= self._board[i][j]:
+                            score += (self._board[i][j+k]/self._board[i][j])
+                            break
+                        if self._board[i][j] <= self._board[i][j+k]:
+                            score += (self._board[i][j]/self._board[i][j+k])
+                            break
+                if j in [0,3]:
+                    for k in range(1,4-i):
+                        if self._board[i+k][j] == 0:
+                            continue
+                        if self._board[i+k][j] <= self._board[i][j]:
+                            score += (self._board[i+k][j]/self._board[i][j])
+                            break
+                        if self._board[i][j] <= self._board[i+k][j]:
+                            score += (self._board[i+k][j]/self._board[i][j])
+                            break
+        return score       
+
     #heuristic function to evaluate the game state
     def heuristic(self):
         res = 0
         for i in range(4):
             for j in range(4):
                 res += self._board[i][j]*self.weight[i][j]
-        res *= pow(len(self.find_empty_tiles()),2) 
+        res += len(self.find_empty_tiles())
         return res
 
 board = Board()

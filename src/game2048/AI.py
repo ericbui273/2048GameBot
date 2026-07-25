@@ -5,14 +5,14 @@ class AI():
     def new_game(self):
         print("Start game")
         self._game = Game()
-        
-        self.play(3)
+        self.play(4)
 
     def play(self,max_depth):
         while True:
             if self._game.game_over():
                 break
-            self._game_tree = Node(is_max = True, board = self._game.board())
+            copy_board = copy.deepcopy(self._game.board())
+            self._game_tree = Node(is_max = True, board = copy_board)
             move = self.expectimax(self._game_tree,0,max_depth,True)[0]
             if move == "left":
                 self._game.move_left()
@@ -22,9 +22,7 @@ class AI():
                 self._game.move_up()
             elif move == "down":
                 self._game.move_down()
-            move = input("Continue? ")
-            if move == "no":
-                break
+
     
     def expectimax(self, root_node: Node, depth,max_depth, is_max):
         if depth == max_depth:
@@ -78,6 +76,7 @@ class AI():
                     root_node.add_child(child)
                     child_node.set_value(self.expectimax(child_node,depth+1,max_depth,False))
             value = 0
+            move = "left"
             for child in root_node.children():
                 if depth == 0:
                     if child[1].value() > value:
