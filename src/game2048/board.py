@@ -1,23 +1,53 @@
 import random
 class Board:
+    """A class that maintains the game board and calculates heuristic value of specific board states
+
+    Attributes:
+        board: the game board to be maintained
+        weight: class variable - a snake-shaped weight matrix used to calculate the weighted sum of all the tiles, 
+        as part of the heuristic value
+        empty_tile_weight: class variable - a snake-shaped weight matrix with reversed order from the weight matrix 
+        that calculates the weight of each empty tile as part of the heuristic value
+
+    """
     weight = [[pow(4,3),pow(4,2),pow(4,1),pow(4,0)],[pow(4,4),pow(4,5),pow(4,6),pow(4,7)],[pow(4,11),pow(4,10),pow(4,9),pow(4,8)],[pow(4,12),pow(4,13),pow(4,14),pow(4,15)]]
+    empty_tile_weight = [[pow(2,12),pow(2,13),pow(2,14),pow(2,15)],[pow(2,11),pow(2,10),pow(2,9),pow(2,8)],[pow(2,4),pow(2,5),pow(2,6),pow(2,7)],[pow(2,3),pow(2,2),pow(2,1),pow(2,0)]]
     def __init__(self,board = None):
+        """Class constructor creating a new game board
+
+        Args:
+            board: the board to be created. If no board is given the class creates an empty board
+        """
         self._board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]] if board == None else board
 
-    def init_board(self):
-        row,col = (random.randint(0,3),random.randint(0,3))
-        value = random.choices([2,4], weights = [0.9,0.1])
+    def init_board(self,generator):
+        """Gives the first random value to the newly created empty board
+
+        Args:
+            generator (class): the class containing methods to generate random values. Normally random.Random()
+        """
+        row,col = (generator.randint(0,3),generator.randint(0,3))
+        value = generator.choices([2,4], weights = [0.9,0.1])
         self._board[row][col] = value[0]
 
+    @property
     def board(self):
         return self._board
 
     def set_value(self,pos,value):
         self._board[pos[0]][pos[1]] = value
+
     def get_value(self,pos):
         return self._board[pos[0]][pos[1]]
-#function to move all tiles of a column or row to a certain direction
+    
     def switch(self,pos: tuple, move: int, direction: str):
+        """Moves all tiles of a column or row to a certain direction
+
+        Args:
+            pos (tuple): position of the first tile to be moved
+            move (int): how many cells are the tiles moved at a time
+            direction (str): the moving direction, left/right/up/down
+        """
         x,y = pos[0], pos[1]
         if direction == "left":
             start = y-move
@@ -52,6 +82,15 @@ class Board:
                     self._board[i][y] = self._board[i-move][y]
 
     def merged(self,pos,direction):
+        """Check if the tile at a specific position can be merged with another adjacent tile
+
+        Args:
+            pos: position of the tile to be checked for merging
+            direction: direction to which the adjacent tile is checked
+
+        Returns:
+            The value of the new merged tile if a merge is made, None if no merge is made  
+        """
         x,y = pos[0], pos[1]
         if direction == "left" and y > 0 and self._board[x][y] == self._board[x][y-1]:
             self._board[x][y-1] *= 2
@@ -79,25 +118,28 @@ class Board:
         return empty_tiles   
 
     def possible_merge(self):
+        """Check a full board to see if there are any 2 tiles that can be merged
+
+        Returns:
+            True if there are still mergeable tiles, False if the board is already in terminal state
+        """
         for i in range(4):
             for j in range(4):
-                if i < 3 and self._board[i][j] == self._board[i+1][j]:
+                if i < 3 and self._board[i][j] == self._board[i+1][j] and self._board[i][j] != 0:
                     return True
-                if j < 3 and self._board[i][j] == self._board[i][j+1]:
+                if j < 3 and self._board[i][j] == self._board[i][j+1] and self._board[i][j] != 0:
                     return True
         return False
 
     def in_terminal_state(self):
+        """Check if a board is in terminal state
+
+        Returns:
+            False if there are still empty tiles or mergeable tiles in the board, True if there are none 
+        """
         if len(self.find_empty_tiles()) > 0:
             return False
         return not self.possible_merge()
-
-    def create_new_tile(self, pos, value = None):
-        x,y = pos[0], pos[1]
-        if not value:
-            self._board[x][y] = random.choices([2,4],weights = [0.9,0.1])
-        else:
-            self._board[x][y] = value
 
     def move_left(self):
         point = 0
@@ -121,7 +163,6 @@ class Board:
                 merged = self.merged((i,j),"left")
                 if merged:
                     point += merged
-                    break
                 j += 1
         return point
         
@@ -149,7 +190,6 @@ class Board:
                 merged = self.merged((i,j),"right")
                 if merged:
                     point += merged
-                    break
                 j -= 1
         return point
     
@@ -159,7 +199,6 @@ class Board:
         for j in range(4):
             zeros = 0
             i = 0
-            point = 0
             while i <= 3:
                 #keep track of the number of zero tiles
                 if self._board[i][j] == 0:
@@ -176,7 +215,6 @@ class Board:
                 merged = self.merged((i,j),"up")
                 if merged:
                     point += merged
-                    break
                 i += 1
         return point
     
@@ -202,13 +240,8 @@ class Board:
                 #Check if the current tile can be merged with the tile above it
                 if merged:
                     point += merged
-                    break
                 i -= 1
         return point
-    
-    def set_new_tile(self,pos,value):
-        row,col = pos
-        self._board[row][col] = value
 
     def __str__(self):
         res = ""
@@ -220,6 +253,11 @@ class Board:
         return res
 
     def monotonicity_score(self):
+        """Calculate score based on monotonicity (not complete)
+
+        Returns:
+            monotonicity score value to be added to the final heuristic value
+        """
         score = 0
         for i in range(4):
             for j in range(4):
@@ -242,6 +280,11 @@ class Board:
         return score
 
     def smoothness_score(self):
+        """Calculate score based on smoothness level (not complete)
+
+        Returns:
+            score value to be added to the final heuristic value
+        """
         score = 0
         for i in range(4):
             for j in range(4):
@@ -268,14 +311,16 @@ class Board:
                             break
         return score       
 
-    #heuristic function to evaluate the game state
     def heuristic(self):
+        """Heuristic function to evaluate the state of the game board
+        (more advantageous game board receives higher heuristic value)
+
+        Returns: heuristic value
+        """
         res = 0
         for i in range(4):
             for j in range(4):
                 res += self._board[i][j]*self.weight[i][j]
-        res += len(self.find_empty_tiles())
+        for pos in self.find_empty_tiles():
+            res += self.empty_tile_weight[pos[0]][pos[1]]
         return res
-
-board = Board()
-print(board)
