@@ -21,3 +21,8 @@ I used GPT-5.5 and -5.6 for troubleshooting when setting up Poetry and resolving
 In addition, I used Claude Sonnet 5 to write the GUI class since GUI is not the main topic of this course, and there is no suitable existing open-source GUI implementation for 2048. The use of LLMs for this part was confirmed as acceptable by my instructor.
 
 In general, LLMs were used as a supporting tool during the project. The core functionalities of the program, including the classes Board, Game, AI, and the unit tests were all designed and implemented by me.
+
+## Sources
+I used the article below as the main source, and also used their suggested weight matrix for my program's heuristic function:
+
+[2048 AI approaches and heuristic (article)](https://cs229.stanford.edu/proj2016/report/NieHouAn-AIPlays2048-report.pdf)
