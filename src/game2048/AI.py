@@ -1,4 +1,3 @@
-from game2048.node import Node
 from game2048.game import Game
 from game2048.board import Board
 import copy
@@ -17,7 +16,6 @@ class AI():
             random_generator: the class containing methods to generate random values. 
             Normally random.Random()
         """
-        print("Start game")
         if board == None:
             self._game = Game(random_generator=random_generator)
             self._game.init_board()
@@ -27,31 +25,8 @@ class AI():
     @property
     def game(self):
         return self._game
-    
-    def play(self,max_depth,continuous = True):
-        """AI starts playing when play is called
 
-        Args:
-            max_depth: maximum depth of the search tree
-            continuous: whether the AI continues to play the game on its own,
-            default value is True
-        """
-        while True:
-            if self._game.game_over():
-                break
-            move = self.best_move(max_depth)
-            if move == "left":
-                self._game.move_left()
-            elif move == "right":
-                self._game.move_right()
-            elif move == "up":
-                self._game.move_up()
-            elif move == "down":
-                self._game.move_down()
-            if not continuous:
-                break
-
-    def best_move(self, max_depth, directions = ("left","right","up","down"), game = None):
+    def best_move(self, given_max_depth = None, given_depth = None, directions = ("left","right","up","down"), game = None):
         """Finds the best move from the give list of move
 
         Args:
@@ -62,11 +37,23 @@ class AI():
 
         Returns: the best move found from executing expectimax
         """
+        if given_max_depth == None:
+            find_empty_tiles = self._game.board.find_empty_tiles()
+            empty_tiles_left = len(find_empty_tiles) if find_empty_tiles else 0
+            if empty_tiles_left >= 12:
+                max_depth = 3
+            elif empty_tiles_left >= 8:
+                max_depth = 4
+            elif empty_tiles_left >= 4:
+                max_depth = 5
+            else:
+                max_depth = 6
+        else:
+            max_depth = given_max_depth
         copy_board = copy.deepcopy(self._game.board) if game == None else copy.deepcopy(game.board)
-        self._game_tree = Node(is_max = True, board = copy_board)
-        return self.expectimax(self._game_tree, 0, max_depth, directions)
+        return self.expectimax(True, copy_board, 0, max_depth, directions) if not given_depth else self.expectimax(True, copy_board, given_depth, max_depth, directions)
     
-    def expectimax(self, root_node: Node, depth,max_depth, directions = ("left","right","up","down")):
+    def expectimax(self, is_max:bool, board : Board, depth,max_depth, directions = ("left","right","up","down")):
         """Search the game tree to find the best move
 
         Args:
@@ -77,79 +64,55 @@ class AI():
         Returns: the best move (left/right/up/down)
         """
         if depth == max_depth:
-            return root_node.board.heuristic()
-        board = root_node.board
-        if root_node.is_max:
+            return board.heuristic()
+        if is_max:
+            move = None
+            best_value = 0
             for d in directions:
                 copy_board = copy.deepcopy(board)
                 if d == "left":
                     copy_board.move_left()
                     if copy_board.board == board.board:
                         continue
-                    child_node = Node(False,copy_board)
-                    if depth == 0:
-                        child = (d,child_node)
-                    else:
-                        child = child_node
-                    root_node.add_child(child)
-                    child_node.set_value(self.expectimax(child_node,depth+1,max_depth))
+                    cur_value = self.expectimax(False, copy_board, depth+1, max_depth)
+                    best_value = cur_value
+                    move = d
                 if d == "right":
                     copy_board.move_right()
                     if copy_board.board == board.board:
                         continue
-                    child_node = Node(False,copy_board)
-                    if depth == 0:
-                        child = (d,child_node)
-                    else:
-                        child = child_node
-                    root_node.add_child(child)
-                    child_node.set_value(self.expectimax(child_node,depth+1,max_depth))
+                    cur_value = self.expectimax(False, copy_board, depth+1, max_depth)
+                    if cur_value > best_value:
+                        best_value = cur_value
+                        move = d
                 if d == "up":
                     copy_board.move_up()
                     if copy_board.board == board.board:
                         continue
-                    child_node = Node(False,copy_board)
-                    if depth == 0:
-                        child = (d,child_node)
-                    else:
-                        child = child_node
-                    root_node.add_child(child)
-                    child_node.set_value(self.expectimax(child_node,depth+1,max_depth))
+                    cur_value = self.expectimax(False, copy_board, depth+1, max_depth)
+                    if cur_value > best_value:
+                        best_value = cur_value
+                        move = d   
                 if d == "down":
                     copy_board.move_down()
                     if copy_board.board == board.board:
-                        continue    
-                    child_node = Node(False,copy_board)
-                    if depth == 0:
-                        child = (d,child_node)
-                    else:
-                        child = child_node
-                    root_node.add_child(child)
-                    child_node.set_value(self.expectimax(child_node,depth+1,max_depth))
-            if root_node.children == []:
+                        continue
+                    cur_value = self.expectimax(False, copy_board, depth+1, max_depth)
+                    if cur_value > best_value:
+                        best_value = cur_value
+                        move = d             
+            if move is None:
                 return board.heuristic() if depth != 0 else None
-            value = 0
-            move = "left"
-            for child in root_node.children:
-                if depth == 0:
-                    if child[1].value > value:
-                        move = child[0]
-                        value = child[1].value
-                else:
-                    value = max(value,child.value)
-            return value if depth != 0 else move
+            return best_value if depth != 0 else move
         else:
             empty_tiles = board.find_empty_tiles()
+            sum_value = 0 #each computed value of the child boards will be added
             for i,j in empty_tiles:
+            # We loop through [(0.9,2),(0.1,4)] because in 2048, after each move, 
+            # the new random tile has 90% possibility to be 2 and 10% possibility to be 4
                 for val in [(0.9,2),(0.1,4)]:
+                    probability, value = val[0], val[1]
                     copy_board = copy.deepcopy(board)
-                    copy_board.set_value((i,j),val[1])
-                    child_node = Node(True,copy_board)
-                    child = (val[0],child_node)
-                    root_node.add_child(child)
-                    child_node.set_value(self.expectimax(child_node,depth+1,max_depth))
-            value = 0
-            for child in root_node.children:
-                value += child[0]*child[1].value
-            value /= (len(root_node.children)/2)
-            return value
+                    copy_board.set_value((i,j),value)
+                    sum_value += probability/len(empty_tiles)*self.expectimax(True, copy_board, depth+1, max_depth)
+            return sum_value

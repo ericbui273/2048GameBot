@@ -31,25 +31,25 @@ class TestGame(unittest.TestCase):
         self.assertFalse(self.game.board is copy_board, "Copied board should be a separate board")
 
     def test_move_left_correctly(self):
-        self.game.move_left()
+        self.game.make_move("left")
         self.assertEqual(self.game.board.board, [[1024,0,0,0],[4,8,0,0],[8,0,0,0],[0,0,0,0]], "Left move returns wrong board")
         self.assertEqual(self.game.score,22, "Left move returns wrong score!")
 
     def test_move_right_correctly(self):
         self.game.board.set_value((2,1),8)
-        self.game.move_right()
+        self.game.make_move("right")
         self.assertEqual(self.game.board.board, [[1024,0,0,0],[0,0,4,8],[0,0,0,16],[0,0,0,0]], "Right move returns wrong board")
         self.assertEqual(self.game.score, 38, "Right move returns wrong score")
 
     def test_move_up_correctly(self):
         game = Game(Board([[32,0,0,0],[32,0,0,0],[128,0,0,8],[128,0,0,0]]), self.Generator())
-        game.move_up()
+        game.make_move("up")
         self.assertEqual(game.board.board,[[64,1024,0,8],[256,0,0,0],[0,0,0,0],[0,0,0,0]], "Up move returns wrong board")
         self.assertEqual(game.score, 320, "Up move returns wrong score")
 
     def test_move_down_correctly(self):
         game = Game(Board([[32,0,0,8],[0,0,0,0],[32,0,0,8],[128,0,0,0]]), self.Generator())
-        game.move_down()
+        game.make_move("down")
         self.assertEqual(game.board.board, [[1024,0,0,0],[0,0,0,0],[64,0,0,0],[128,0,0,16]], "Down move returns wrong board")
         self.assertEqual(game.score, 80, "Down move returns wrong score")
 

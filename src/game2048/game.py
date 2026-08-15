@@ -29,34 +29,23 @@ class Game():
     @property
     def board(self):
         return self._board
-
-    def move_left(self):
-        self._score += self._board.move_left()
+    
+    def make_move(self, direction):
+        if direction == "left":
+            self._score += self._board.move_left()
+        elif direction == "right":
+            self._score += self._board.move_right()
+        elif direction == "up":
+            self._score += self._board.move_up()
+        else:
+            self._score += self._board.move_down()
         pos = self._random.choice(self._board.find_empty_tiles())
+        # There is always at least 1 empty tile after every move is made
+        # because the AI makes sure to not consider 
+        # any move that does not change the board
+        # Therefore, there is always a valid value for pos variable
         value = self._random.choices([2,4],weights = [0.9,0.1])
         self._board.set_value(pos,value[0])
-        print(f"{self._board}\n")
-
-    def move_right(self):
-        self._score += self._board.move_right()
-        pos = self._random.choice(self._board.find_empty_tiles())
-        value = self._random.choices([2,4],weights = [0.9,0.1])
-        self._board.set_value(pos,value[0])
-        print(f"{self._board}\n")
-
-    def move_up(self):
-        self._score += self._board.move_up()
-        pos = self._random.choice(self._board.find_empty_tiles())
-        value = self._random.choices([2,4],weights = [0.9,0.1])
-        self._board.set_value(pos,value[0])
-        print(f"{self._board}\n")
-
-    def move_down(self):
-        self._score += self._board.move_down()
-        pos = self._random.choice(self._board.find_empty_tiles())
-        value = self._random.choices([2,4],weights = [0.9,0.1])
-        self._board.set_value(pos,value[0])
-        print(f"{self._board}\n")
 
     def game_over(self):
         """Check if the board is in terminal state,
@@ -66,6 +55,5 @@ class Game():
             whether the game is over
         """
         if self._board.in_terminal_state():
-            print(f"Game over! Score: {self._score}")
             return True
         return False

@@ -4,14 +4,14 @@ class Board:
 
     Attributes:
         board: the game board to be maintained
-        weight: class variable - a snake-shaped weight matrix used to calculate the weighted sum of all the tiles, 
+        weight: class variable - a snake-shaped weight matrix used to calculate the weighted sum of all the tiles,
         as part of the heuristic value
-        empty_tile_weight: class variable - a snake-shaped weight matrix with reversed order from the weight matrix 
-        that calculates the weight of each empty tile as part of the heuristic value
 
     """
-    weight = [[pow(4,3),pow(4,2),pow(4,1),pow(4,0)],[pow(4,4),pow(4,5),pow(4,6),pow(4,7)],[pow(4,11),pow(4,10),pow(4,9),pow(4,8)],[pow(4,12),pow(4,13),pow(4,14),pow(4,15)]]
-    empty_tile_weight = [[pow(2,12),pow(2,13),pow(2,14),pow(2,15)],[pow(2,11),pow(2,10),pow(2,9),pow(2,8)],[pow(2,4),pow(2,5),pow(2,6),pow(2,7)],[pow(2,3),pow(2,2),pow(2,1),pow(2,0)]]
+    weight = [[pow(4,3),pow(4,2),pow(4,1),pow(4,0)],
+              [pow(4,4),pow(4,5),pow(4,6),pow(4,7)],
+              [pow(4,11),pow(4,10),pow(4,9),pow(4,8)],
+              [pow(4,12),pow(4,13),pow(4,14),pow(4,15)]]
     def __init__(self,board = None):
         """Class constructor creating a new game board
 
@@ -73,7 +73,7 @@ class Board:
                 else:
                     self._board[i][y] = self._board[i+move][y]
 
-        elif direction == "down":
+        else:
             start = x + move
             for i in range(start,-1,-1):
                 if i < move:
@@ -115,7 +115,7 @@ class Board:
             for j in range(4):
                 if self._board[i][j] == 0:
                     empty_tiles.append((i,j))
-        return empty_tiles   
+        return empty_tiles if len(empty_tiles) > 0 else None   
 
     def possible_merge(self):
         """Check a full board to see if there are any 2 tiles that can be merged
@@ -137,7 +137,7 @@ class Board:
         Returns:
             False if there are still empty tiles or mergeable tiles in the board, True if there are none 
         """
-        if len(self.find_empty_tiles()) > 0:
+        if self.find_empty_tiles():
             return False
         return not self.possible_merge()
 
@@ -252,65 +252,6 @@ class Board:
             res += f"{self._board[i]}\n"
         return res
 
-    def monotonicity_score(self):
-        """Calculate score based on monotonicity (not complete)
-
-        Returns:
-            monotonicity score value to be added to the final heuristic value
-        """
-        score = 0
-        for i in range(4):
-            for j in range(4):
-                if j < 3:
-                    value_diff = self._board[i][j+1]-self._board[i][j]
-                    if value_diff == 0:
-                        continue
-                    if value_diff/(self.weight[i][j]-self.weight[i][j+1]) > 0:
-                        score += 1
-                    else:
-                        score -= 1
-                if i < 3 and j in [0,3]:
-                    value_diff = self._board[i][j]-self._board[i+1][j]
-                    if value_diff == 0:
-                        continue
-                    if value_diff/(self.weight[i][j]-self.weight[i+1][j]) > 0:
-                        score += 1
-                    else:
-                        score -= 1   
-        return score
-
-    def smoothness_score(self):
-        """Calculate score based on smoothness level (not complete)
-
-        Returns:
-            score value to be added to the final heuristic value
-        """
-        score = 0
-        for i in range(4):
-            for j in range(4):
-                if self._board[i][j] == 0:
-                    continue
-                for k in range(1,4-j):
-                        if self._board[i][j+k] == 0:
-                            continue
-                        if self._board[i][j+k] <= self._board[i][j]:
-                            score += (self._board[i][j+k]/self._board[i][j])
-                            break
-                        if self._board[i][j] <= self._board[i][j+k]:
-                            score += (self._board[i][j]/self._board[i][j+k])
-                            break
-                if j in [0,3]:
-                    for k in range(1,4-i):
-                        if self._board[i+k][j] == 0:
-                            continue
-                        if self._board[i+k][j] <= self._board[i][j]:
-                            score += (self._board[i+k][j]/self._board[i][j])
-                            break
-                        if self._board[i][j] <= self._board[i+k][j]:
-                            score += (self._board[i+k][j]/self._board[i][j])
-                            break
-        return score       
-
     def heuristic(self):
         """Heuristic function to evaluate the state of the game board
         (more advantageous game board receives higher heuristic value)
@@ -321,6 +262,4 @@ class Board:
         for i in range(4):
             for j in range(4):
                 res += self._board[i][j]*self.weight[i][j]
-        for pos in self.find_empty_tiles():
-            res += self.empty_tile_weight[pos[0]][pos[1]]
         return res

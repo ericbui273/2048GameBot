@@ -2,7 +2,6 @@ import unittest
 from game2048.board import Board
 class TestBoard(unittest.TestCase):
     def setUp(self):
-        print("Set up goes here")
         self.blank_board = Board()
         self.board = Board([[0,0,0,0],[2,2,4,4],[0,0,8,0],[0,0,0,0]])
 
@@ -109,7 +108,7 @@ class TestBoard(unittest.TestCase):
 
     def test_find_empty_tiles_no_empty_tile(self):
         board = Board([[2,4,8,16],[16,8,4,2],[2,2,2,2],[4,4,4,4,]])
-        self.assertEqual(board.find_empty_tiles(), [], "There is no empty tile!")
+        self.assertIsNone(board.find_empty_tiles(), "There is no empty tile!")
 
     def test_find_correct_empty_tiles(self):
         board = Board([[2,0,4,8],[32,16,0,64],[0,128,256,1024],[64,32,128,0]])
@@ -139,4 +138,8 @@ class TestBoard(unittest.TestCase):
     def test_heuristic_evaluates_correctly(self):
         board1 = Board([[0, 0, 0, 0],[0, 0, 0, 0],[8, 4, 0, 0], [128, 512, 1024, 2]])
         board2 = Board([[0, 0, 0, 2],[0,0,0,0],[0,0,8,4], [0, 128, 512, 1024]])
-        self.assertTrue(board1.heuristic()<board2.heuristic())
+        self.assertTrue(board1.heuristic()<board2.heuristic(), "Heuristic function should not give higher score to the less advantageous board!")
+
+    def test_heuristic_returns_correct_value(self):
+        self.board.set_value((3,2),8)
+        self.assertEqual(self.board.heuristic(),2149665280, "Incorrect heuristic value!")
