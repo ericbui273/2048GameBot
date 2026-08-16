@@ -4,6 +4,30 @@ The classes Board, Game, AI in the directory src/game2048 were tested using unit
 **Unit testing coverage report**
 <img width="813" height="193" alt="image" src="https://github.com/user-attachments/assets/cb4cd2e7-d346-452b-b2b5-d77052297b99" />
 
+## Reproduce test results
+To reproduce the test results, you need to have **_Python 3.10+_** and **_Poetry_** installed in your computer.
+
+First, clone the project to your own machine. Then start poetry and install the project dependencies with the commands
+
+```bash
+poetry shell
+```
+
+```bash
+poetry install --no-root
+```
+
+Then, you can run the automated unit tests with the command
+
+``` bash
+poetry run invoke test
+```
+
+You can also generate the test coverage report with the command
+
+``` bash
+poetry run invoke coverage
+```
 
 ## Manual test using graphical user interface (GUI)
 The game was run several times using GUI to verify from the user perspective that the AI makes legal moves and returns good results. 
