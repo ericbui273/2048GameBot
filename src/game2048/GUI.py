@@ -1,19 +1,3 @@
-
-"""
-Simple Tkinter GUI for watching the 2048 expectimax AI play.
- 
-Two modes, chosen from the start screen:
-  - Continuous: the AI plays move after move on its own (a short delay
-    between moves so you can actually watch it happen). No keys do anything.
-  - Step: the AI computes and makes exactly one move each time you press
-    the SPACE bar. Nothing else advances the game.
-Five optimal levels, chosen from the start screen:
-    - Default: the search has maximum depth according to the function best_move() 
-    in class AI
-    - Level 2-5: the maximum depth is given to the class play according to the level,
-    higher level returns better score but takes more runtime
-"""
- 
 import random
 import tkinter as tk
 from tkinter import font as tkfont
@@ -49,6 +33,23 @@ BOARD_PIXELS = CELL_SIZE * 4 + CELL_PAD * 5
  
  
 class App(tk.Tk):
+    """
+Simple Tkinter GUI for watching the 2048 expectimax AI play.
+
+Attributes:
+    mode: user can choose one from two modes from the start screen:
+        + Continuous: the AI plays move after move on its own (a short delay
+        between moves so you can actually watch it happen). No keys do anything.
+        + Step: the AI computes and makes exactly one move each time you press
+        the SPACE bar. Nothing else advances the game.
+    max_depth: defined based on the optimal level that user chooses from the start screen
+        + Default: the search has maximum depth according to the function best_move() 
+        in class AI
+        + Level 2-5: max depth 2-5
+    after_id: handle for the scheduled continuous move, set back to None when a new game is started or the game is over
+    game_active: whether a game is going on, set to True when a new game is started and set to False when the game is over
+    
+"""
     def __init__(self):
         super().__init__()
         self.title("2048 AI Watcher")
@@ -60,20 +61,19 @@ class App(tk.Tk):
         self.button_font = tkfont.Font(family="Helvetica", size=13, weight="bold")
         self.tile_font = tkfont.Font(family="Helvetica", size=28, weight="bold")
  
-        self.mode = None          # "continuous" or "step"
-        self.max_depth = None     # None = default (adaptive) depth, else 2-5
+        self.mode = None
+        self.max_depth = None 
         self.ai = None
-        self.after_id = None      # handle for the scheduled continuous move
+        self.after_id = None
         self.game_active = False
  
         self.level_var = tk.StringVar(value="Default")
  
         self._build_start_screen()
- 
-    # ------------------------------------------------------------------
-    # Start screen: choose how the AI should play
-    # ------------------------------------------------------------------
+
     def _build_start_screen(self):
+        """Build the start screen, where user gets to choose how the AI should play and at which optimal level
+        """
         self.start_frame = tk.Frame(self, bg=BG_COLOR, padx=40, pady=40)
         self.start_frame.pack()
  
@@ -83,7 +83,6 @@ class App(tk.Tk):
                  text="Watch an AI bot play 2048.\nChoose how you'd like it to play:",
                  font=self.label_font, bg=BG_COLOR, fg="#776e65", justify="center").pack(pady=(0, 20))
  
-        # --- Optimal level (search depth) picker ---
         level_frame = tk.Frame(self.start_frame, bg=BG_COLOR)
         level_frame.pack(pady=(0, 20))
         tk.Label(level_frame, text="Optimal level", font=("Helvetica", 12, "bold"),
@@ -109,9 +108,7 @@ class App(tk.Tk):
                   relief="flat", padx=20, pady=12, width=22,
                   command=lambda: self._start_game("step")).pack(pady=6)
  
-    # ------------------------------------------------------------------
-    # Game screen: board, score, and controls
-    # ------------------------------------------------------------------
+
     def _start_game(self, mode):
         self.mode = mode
         level = self.level_var.get()
@@ -159,6 +156,9 @@ class App(tk.Tk):
         self._new_game()
  
     def _new_game(self):
+        """A function called when user clicks "New game", after which scheduling for the next move is cancelled, after_id is set back to None, 
+        and a new game in the same mode and level with the current game starts
+        """
         if self.after_id is not None:
             self.after_cancel(self.after_id)
             self.after_id = None
@@ -176,6 +176,8 @@ class App(tk.Tk):
             self.status_var.set(f"Press SPACE to make the next move ({level_label})")
  
     def _back_to_menu(self):
+        """A function called when the user clicks "Back to menu", after which scheduling for the next move is cancelled, after_id is set back to None, and the screen returns to the start screen
+        """
         if self.after_id is not None:
             self.after_cancel(self.after_id)
             self.after_id = None
@@ -183,15 +185,17 @@ class App(tk.Tk):
         self.game_frame.destroy()
         self._build_start_screen()
  
-    # ------------------------------------------------------------------
-    # Move handling
-    # ------------------------------------------------------------------
-    def _on_space(self, event=None):
+
+    def _on_space(self):
+        """A function called when the user presses SPACE, which tells the AI to make the next move if the step mode was chosen and the game is not over
+        """
         if self.mode != "step" or not self.game_active:
             return
         self._make_one_move()
  
     def _continuous_step(self):
+        """A function letting the AI continuously make a new move until the game is over and game_active becomes False
+        """
         if not self.game_active:
             return
         self._make_one_move()
@@ -212,7 +216,7 @@ class App(tk.Tk):
             self._end_game()
         elif self.mode == "step":
             level_label = "default (adaptive)" if self.max_depth is None else f"level {self.max_depth}"
-            self.status_var.set(f"Moved {move.upper()} — press SPACE to continue ({level_label})")
+            self.status_var.set(f"Press SPACE to continue")
  
     def _end_game(self):
         self.game_active = False
@@ -221,10 +225,9 @@ class App(tk.Tk):
             self.after_id = None
         self.status_var.set(f"Game over! Final score: {self.ai.game.score}")
  
-    # ------------------------------------------------------------------
-    # Drawing
-    # ------------------------------------------------------------------
     def _draw_board(self):
+        """A function called after each time a move is made to update the board
+        """
         self.canvas.delete("all")
         board = self.ai.game.board.board
         self.score_var.set(str(self.ai.game.score))
