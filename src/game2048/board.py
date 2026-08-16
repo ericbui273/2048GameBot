@@ -34,7 +34,7 @@ class Board:
     def board(self):
         return self._board
 
-    def set_value(self,pos,value):
+    def set_value(self,pos:tuple,value:int):
         self._board[pos[0]][pos[1]] = value
 
     def get_value(self,pos):
