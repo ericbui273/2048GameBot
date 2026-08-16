@@ -8,15 +8,10 @@ The implementation of the project includes developing a 2048 game interface, the
 ### Programming language
 The project will be done using Python. In addition, I can also peer-review projects written in Java.
 ### Received inputs
-- **Maximum number of search tree depth**: the search ends if the terminal state is not reached after this maximum number of searches. The runtime and memory space can increase significantly fast when the depth increases, so it is important to test and find out the most optimized search depth.
-- **Location and value of the newly generated tile**: this input is used for the heuristic function to evaluate each possible AI’s move.
-- **AI’s move**: this input is used to create new merged tiles (if there are any) and calculate the new score.
+Since the AI does not play against a human in this game, there is no user input needed to implement the program.
 ## Algorithms and data structures
 ### For evaluating the game state
-For evaluating the game state resulting from a specific move, I will implement a **heuristic evaluation function** that takes into account: 
-- **The number of free tiles**: more free tiles give a higher advantage to the game state 
-- **The game board’s monotonicity**: measuring whether the values are increasing/decreasing in a consistent specified direction
-- **Smoothness**: trying to minimize the value difference of adjacent tiles
+For evaluating the game state resulting from a specific move, I will implement a **heuristic evaluation function** that takes into account the value distribution of the board.
 
 
 
