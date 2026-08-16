@@ -6,7 +6,7 @@ class Game():
     
     Attributes:
         board: the game board
-        random: the class containing methods to generate random values. Normally random.Random()
+        random_generator: the class containing methods to generate random values. Normally random.Random()
         score: current score of the game, increased after every merge
     """
     def __init__(self, board = None, random_generator = random.Random(), score = 0):
