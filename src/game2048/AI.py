@@ -27,10 +27,11 @@ class AI():
         return self._game
 
     def best_move(self, given_max_depth = None, given_depth = None, directions = ("left","right","up","down"), game = None):
-        """Finds the best move from the give list of move
+        """Finds the best move from the given lists of moves
 
         Args:
-            max_depth: maximum depth of the search tree
+            given_max_depth: maximum depth of the search tree, if no value is given the max depth is defined inside the function
+            given_depth: the depth to start expectimax at, if no value is given, expectimax starts at depth 0
             directions: possible moves to evaluate
             game: the Game object to play, use the class attribute
             if no game is given
@@ -61,7 +62,7 @@ class AI():
             depth: search depth, increase by 1 after each search
             max_depth: maximum search depth 
             directions: moves to find best move from
-        Returns: the best move (left/right/up/down)
+        Returns: the best move (left/right/up/down) or None if there is no legal move
         """
         if depth == max_depth:
             return board.heuristic()
