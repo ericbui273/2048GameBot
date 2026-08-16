@@ -19,6 +19,7 @@ class TestGame(unittest.TestCase):
 
     def test_constructor_creates_correct_new_game(self):
         self.assertEqual(self.new_game.board.board, [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]], "Board should be blank if no board parameter is given to the constructor")
+        
     def test_initialize_board_correctly(self):
         self.new_game.init_board()
         self.assertEqual(self.new_game.board.board, [[1024,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]], "init_board not working properly")
