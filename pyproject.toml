@@ -18,3 +18,5 @@ dev = [
     "coverage (>=7.15.2,<8.0.0)",
     "invoke>=3.0.3,<4.0.0"
 ]
+[tool.poetry.dependencies]
+pylint = "^4.0.7"
