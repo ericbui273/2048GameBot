@@ -27,84 +27,84 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.board,[[1024,0,0,0],[2,2,4,4],[0,0,8,0],[0,0,0,0]], "Left move incorrect!")
 
     def test_board_moves_left_double_merge(self):
-        self.board.move_left()
+        self.board.move(direction = "left")
         self.assertEqual(self.board.board,[[0,0,0,0],[4,8,0,0],[8,0,0,0],[0,0,0,0]], "Left move incorrect!")
 
     def test_board_moves_left_single_merge(self):
         self.board.set_value((1,2),2)
-        self.board.move_left()
+        self.board.move("left")
         self.assertEqual(self.board.board,[[0,0,0,0],[4,2,4,0],[8,0,0,0],[0,0,0,0]], "Left move incorrect!")
 
     def test_board_moves_left_with_empty_tile_in_between(self):
         board = Board([[0,2,0,4],[0,0,0,0],[0,0,0,0],[2,0,2,4]])
-        board.move_left()
+        board.move("left")
         self.assertEqual(board.board, [[2,4,0,0],[0,0,0,0],[0,0,0,0],[4,4,0,0]], "Left move incorrect!")
 
     def test_board_moves_left_no_merge(self):
         self.blank_board.set_value((2,0),7)
         self.blank_board.set_value((2,2),16)
-        self.blank_board.move_left()
+        self.blank_board.move("left")
         self.assertEqual(self.blank_board.board, [[0,0,0,0],[0,0,0,0],[7,16,0,0],[0,0,0,0]], "Left move incorrect!")
 
     def test_move_left_double_merge_score(self):
-        self.assertEqual(self.board.move_left(), 12, "Left move returns wrong score!")
+        self.assertEqual(self.board.move("left"), 12, "Left move returns wrong score!")
 
     def test_move_left_two_merges_score(self):
             board = Board([[0,8,0,8],[0,0,0,0],[32,0,32,0],[0,0,0,0]])
-            self.assertEqual(board.move_left(), 80, "Left move returns wrong score!")
+            self.assertEqual(board.move("left"), 80, "Left move returns wrong score!")
 
     def test_move_left_single_merge_score(self):
         self.board.set_value((1,0),0)
-        self.assertEqual(self.board.move_left(),8, "Left move returns wrong score!")
+        self.assertEqual(self.board.move("left"),8, "Left move returns wrong score!")
 
     def test_move_left_no_merge_score(self):
         self.blank_board.set_value((2,0),7)
         self.blank_board.set_value((2,2),16)
-        self.assertEqual(self.blank_board.move_left(), 0, "Left move returns wrong score!")
+        self.assertEqual(self.blank_board.move("left"), 0, "Left move returns wrong score!")
 
     def test_board_moves_right_with_empty_tile_in_between(self):
         board = Board([[8,0,16,0],[0,0,8,0],[0,0,0,0],[16,16,0,16]])
-        board.move_right()
+        board.move("right")
         self.assertEqual(board.board,[[0,0,8,16],[0,0,0,8],[0,0,0,0],[0,0,16,32]], "Right move incorrect!")
 
     def test_move_right_double_merge_score(self):
-        self.assertEqual(self.board.move_right(),12, "Right move returns wrong score!")
+        self.assertEqual(self.board.move("right"), 12, "Right move returns wrong score!")
 
     def test_move_right_no_merge_score(self):
         self.blank_board.set_value((2,0),7)
         self.blank_board.set_value((2,2),16)
-        self.assertEqual(self.blank_board.move_right(), 0, "Right move returns wrong score!")        
+        self.assertEqual(self.blank_board.move("right"), 0, "Right move returns wrong score!")        
 
     def test_board_moves_up_double_merge(self):
         board = Board([[32,0,0,0],[32,0,0,0],[128,0,0,8],[128,0,0,0]])
-        board.move_up()
+        board.move("up")
         self.assertEqual(board.board,[[64,0,0,8],[256,0,0,0],[0,0,0,0],[0,0,0,0]], "Up move incorrect!")
 
     def test_board_moves_up_with_empty_tile_in_between(self):
         board = Board([[0,0,16,0],[0,0,0,0],[0,0,16,0],[0,0,64,0]])
-        board.move_up()
+        board.move("up")
         self.assertEqual(board.board,[[0,0,32,0],[0,0,64,0],[0,0,0,0],[0,0,0,0]]), "Up move incorrect!"
 
     def test_move_up_double_merge_score(self):
         board = Board([[32,0,0,0],[32,0,0,0],[128,0,0,8],[128,0,0,0]])
-        self.assertEqual(board.move_up(), 320, "Up move returns wrong score!")
+        self.assertEqual(board.move("up"), 320, "Up move returns wrong score!")
 
     def test_move_up_no_merge_score(self):
-        self.assertEqual(self.board.move_up(), 0, "Up move returns wrong score!")
+        self.assertEqual(self.board.move("up"), 0, "Up move returns wrong score!")
 
     def test_board_moves_down_double_merge(self):
         board = Board([[0,0,32,0],[0,0,32,0],[0,0,128,8],[0,0,128,0]])
-        board.move_down()
+        board.move("down")
         self.assertEqual(board.board, [[0,0,0,0],[0,0,0,0],[0,0,64,0],[0,0,256,8]], "Down move incorrect!")
 
     def test_board_moves_down_with_empty_tile_in_between(self):
         board = Board([[0,0,128,0],[0,0,0,0],[0,0,128,0],[0,0,0,0]])
-        board.move_down()
+        board.move("down")
         self.assertEqual(board.board, [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,256,0]], "Down move incorrect!")
 
     def test_move_down_two_merges_score(self):
         board = Board([[0,1024,0,0],[0,1024,2048,0],[0,0,0,0],[0,1024,2048,0]])
-        self.assertEqual(board.move_down(),2048+4096, "Down move returns wrong score!")
+        self.assertEqual(board.move("down"),2048+4096, "Down move returns wrong score!")
 
     def test_find_empty_tiles_no_empty_tile(self):
         board = Board([[2,4,8,16],[16,8,4,2],[2,2,2,2],[4,4,4,4,]])

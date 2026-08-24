@@ -26,11 +26,6 @@ class TestGame(unittest.TestCase):
         self.game.init_board()
         self.assertEqual(self.game.board.board, [[1024,0,0,0],[2,2,4,4],[0,0,8,0],[0,0,0,0]], "init_board not working properly")
 
-    def test_copy_board_correctly(self):
-        copy_board = self.game.copy_board()
-        self.assertEqual(self.game.board.board, copy_board.board, "Copied board should be identical to the original board!")
-        self.assertFalse(self.game.board is copy_board, "Copied board should be a separate board")
-
     def test_move_left_correctly(self):
         self.game.make_move("left")
         self.assertEqual(self.game.board.board, [[1024,0,0,0],[4,8,0,0],[8,0,0,0],[0,0,0,0]], "Left move returns wrong board")
