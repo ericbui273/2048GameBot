@@ -65,8 +65,12 @@ The unit test for the class AI was made using different games with different boa
 
 What has been tested:
 - The new game is created properly (with a blank board and a random tile created using the random number generator)
-- The AI always makes legal move, the attempt to find a move for a board in terminal state will return None
+- The AI always makes legal move:
+
+  + Function `test_AI_makes_legal_move_left()` (_AI_test.py: 24-26_): The legal moves possible are left, up and down, but only left and right are given as possible moves, so the function will return left.
+- The attempt to find a move for a board in terminal state will return None
 - In situation where there are several legal moves, the AI makes the best move possible
+  + Function `test_AI_makes_best_move_right()` (_AI_test.py: 35-37_): All 4 moves are legal for the current board, but the best move returned should be right. By moving right, a tile of value ***16384*** (which is significantly larger than the other tile values) is created in the position with the largest weight (**_4^15_**). Therefore, we can see that this move would return the best heuristic value without having to generate all the boards of all depths.
 - Expectimax conducts search with the correct maximum depth as defined in the best_move() function if no max depth value is given
 - Expectimax returns correct value in 3 situations: at the final depth, at a chance node and at a max node
 
