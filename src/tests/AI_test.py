@@ -21,9 +21,9 @@ class TestAI(unittest.TestCase):
         self.new_ai.new_game()
         self.assertEqual(self.new_ai.game.board.board, [[1024,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]], "Game board is not created properly!")
 
-    def test_AI_makes_legal_move_right(self):
-        self.new_ai.new_game()
-        self.assertEqual(self.new_ai.best_move(directions = ["left","right"]), "right", "Wrong return value from expectimax")
+    def test_AI_makes_legal_move_left(self):
+        ai = AI(game = Game(board = Board([[0,0,0,1024],[0,0,0,0],[0,0,0,0],[0,0,0,0]])))
+        self.assertEqual(ai.best_move(directions = ["left","right"]), "left", "Wrong return value from expectimax")
 
     def test_AI_makes_legal_move_up(self):
         self.assertEqual(self.ai.best_move(3), "up", "AI did not make a legal move")
@@ -32,9 +32,9 @@ class TestAI(unittest.TestCase):
         ai = AI(game = Game(board = Board([[2,4,8,16],[4,256,128,1024],[2048,32,4,2],[2,8,16,4]])))
         self.assertIsNone(ai.best_move(), "best_move should not return value for boards in terminal state!")    
 
-    def test_AI_makes_best_move_left(self):
-        ai = AI(game = Game(board = Board([[2, 2, 8, 4],[0, 4, 32, 8],[4, 32, 2, 4],[256, 4, 256, 2048]])))
-        self.assertEqual(ai.best_move(), "left", "AI did not make the best move")
+    def test_AI_makes_best_move_right(self):
+        ai = AI(game = Game(board = Board([[2, 2, 8, 32],[0, 4, 16, 32],[4, 32, 2, 0],[256, 8192, 8192, 0]])))
+        self.assertEqual(ai.best_move(), "right", "AI did not make the best move")
 
     def test_AI_makes_best_move_down(self):
         self.new_ai.new_game()
@@ -58,7 +58,8 @@ class TestAI(unittest.TestCase):
 
     def test_expectimax_has_correct_max_depth_15_empty_tiles(self):
         self.new_ai.new_game()
-        self.assertEqual(self.new_ai.best_move(given_max_depth = None, given_depth = 3), self.new_ai.game.board.heuristic())
+        self.assertEqual(self.new_ai.best_move(given_max_depth = None, given_depth = 3), self.new_ai.game.board.heuristic()) 
+        #with 15 empty tiles, default max depth is 3, so the best_move function at given depth 3 returns the heuristic value of the current board
 
     def test_expectimax_has_correct_max_depth_10_empty_tiles(self):
         ai = AI(game = Game(board = Board([[0,0,0,0],[0,0,0,8],[0,0,0,128],[256,512,1024,2048]])))
