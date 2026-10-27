@@ -80,15 +80,14 @@ class Board:
                     self._board[i][y] = 0
                 else:
                     self._board[i][y] = self._board[i+move][y]
-        elif direction == "down":
+        else:
             start = x + move
             for i in range(start,-1,-1):
                 if i < move:
                     self._board[i][y] = 0
                 else:
                     self._board[i][y] = self._board[i-move][y]
-        else:
-            return
+
 
 
     def merged(self,pos: tuple, direction: str) -> int | None:
@@ -152,7 +151,7 @@ class Board:
                     if merged:
                         point += merged
                     j = j + 1 if direction == "left" else j - 1
-            elif direction in ("up", "down"):
+            else:
                 j = 0 if direction == "up" else 3
                 while ((j <= 3 and direction == "up")
                        or (j >= 0 and direction == "down")):
@@ -169,8 +168,6 @@ class Board:
                     if merged:
                         point += merged
                     j = j + 1 if direction == "up" else j - 1
-            else:
-                return 0
         return point
 
 
