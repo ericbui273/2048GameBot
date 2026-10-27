@@ -10,7 +10,7 @@ class AI():
     Attributes:
         game: the game that the AI is playing
     """
-    def __init__(self, game = Game(random_generator= random.Random())):
+    def __init__(self, game = Game(random_generator=random.Random())):
         self._game = game
 
 
@@ -69,7 +69,8 @@ class AI():
             board: Board,
             depth: int,
             max_depth: int,
-            directions: list | list = ("left","right","up","down")) -> int:
+            directions: list | list = ("left","right","up","down"),
+            heuristic_func = None) -> int:
         """Search the game tree to find the best move
         
             Args:
@@ -81,7 +82,7 @@ class AI():
             Returns: the best move (left/right/up/down) or None if there is no legal move
         """
         if depth == max_depth:
-            return board.heuristic()
+            return heuristic_func(board.board) if heuristic_func else board.heuristic()
         empty_tiles = board.find_empty_tiles()
         sum_value = 0 #each computed value of the child boards will be added
         for i,j in empty_tiles:
@@ -101,9 +102,10 @@ class AI():
             board: Board,
             depth: int,
             max_depth: int,
-            directions: list | list = ("left","right","up","down")) -> str | int:
+            directions: list | list = ("left","right","up","down"),
+            heuristic_func = None) -> str | int:
         if depth == max_depth:
-            return board.heuristic()
+            return heuristic_func(board.board) if heuristic_func else board.heuristic()
         move = None
         best_value = 0
         for d in directions:
@@ -116,5 +118,6 @@ class AI():
                 best_value = cur_value
                 move = d
         if move is None:
-            return board.heuristic() if depth != 0 else None
+            heuristic = heuristic_func(board.board) if heuristic_func else board.heuristic()
+            return heuristic if depth != 0 else None
         return best_value if depth != 0 else move
