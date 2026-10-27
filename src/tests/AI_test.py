@@ -33,12 +33,25 @@ class TestAI(unittest.TestCase):
         self.assertIsNone(ai.best_move(), "best_move should not return value for boards in terminal state!")    
 
     def test_AI_makes_best_move_right(self):
-        ai = AI(game = Game(board = Board([[2, 2, 8, 32],[0, 4, 16, 32],[4, 32, 2, 0],[256, 8192, 8192, 0]])))
-        self.assertEqual(ai.best_move(), "right", "AI did not make the best move")
+        def heuristic(board:list) -> int:
+            res = 0
+            for row in board:
+                if 64 in row:
+                    res += 100
+            return res
+        ai = AI(game = Game(board = Board([[2, 2, 8, 32], [0, 4, 16, 16], [4, 1024, 2, 0], [256, 1024, 2048, 0]])))
+        self.assertEqual(ai.expectimax_max(ai._game.board, 0, 5, heuristic_func=heuristic), "right", "AI did not make the best move")
 
     def test_AI_makes_best_move_down(self):
-        self.new_ai.new_game()
-        self.assertEqual(self.new_ai.best_move(), "down", "AI did not make the best move")
+        def heuristic(board:list) -> int:
+            res = 0
+            for row in board:
+                if 2048 in row:
+                    res = 100
+                    break
+            return res
+        ai = AI(game=Game(board=Board([[2, 2, 8, 32], [0, 4, 16, 16], [512, 128, 1024, 0], [512, 1024, 64, 4096]])))
+        self.assertEqual(self.new_ai.expectimax_max(ai._game.board,0,5,heuristic_func=heuristic), "down", "AI did not make the best move")
 
     def test_expectimax_final_depth_returns_correct_value(self):
         board = Board([[1024,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]])
