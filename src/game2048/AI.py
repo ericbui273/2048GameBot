@@ -93,7 +93,7 @@ class AI():
                 copy_board = copy.deepcopy(board)
                 copy_board.set_value((i,j),value)
                 sum_value += (probability/len(empty_tiles)*
-                              self.expectimax_max(copy_board, depth+1, max_depth))
+                              self.expectimax_max(copy_board, depth+1, max_depth, directions, heuristic_func))
         return sum_value
 
 
@@ -105,7 +105,8 @@ class AI():
             directions: list | list = ("left","right","up","down"),
             heuristic_func = None) -> str | int:
         if depth == max_depth:
-            return heuristic_func(board.board) if heuristic_func else board.heuristic()
+            heuristic = heuristic_func(board.board) if heuristic_func else board.heuristic()
+            return heuristic
         move = None
         best_value = 0
         for d in directions:
@@ -113,7 +114,7 @@ class AI():
             copy_board.move(d)
             if copy_board.board == board.board:
                 continue
-            cur_value = self.expectimax_chance(copy_board, depth+1, max_depth)
+            cur_value = self.expectimax_chance(copy_board, depth+1, max_depth, directions, heuristic_func)
             if cur_value > best_value:
                 best_value = cur_value
                 move = d
